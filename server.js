@@ -40,6 +40,9 @@ app.use('/User', userRoutes);
 app.use('/',isAuthenticated, (req, res) => {
     res.send('Welcome to the Building Management System API');
 });
+app.get('/api/hello', (req, res) => {
+    res.send('Hello World!');
+})
 // Define the port number
 const PORT = process.env.PORT || 3000;
 
