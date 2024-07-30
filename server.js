@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const dotenv = require('dotenv');
 require('dotenv').config();
-const buildingRoutes = require('../Backend/Routes/Building');
+const buildingRoutes = require('./Routes/Building');
 const userRoutes = require('./Routes/Users');
 const {isAuthenticated} = require('./Middleware/auth');
 
@@ -50,3 +50,20 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
+
+// const express = require('express');
+// const app = express();
+// const PORT = process.env.PORT || 3000;
+
+// app.use(express.json());
+
+// app.get('/api/hello', (req, res) => {
+//     res.send('Hello World!');
+// });
+
+// app.listen(PORT, () => {
+//     console.log(`Server is running on port ${PORT}`);
+// });
+
+// module.exports = app;
+
