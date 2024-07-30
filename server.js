@@ -4,10 +4,10 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const multer = require('multer');
+const cloudinary = require('cloudinary').v2;
+const fs = require('fs');
 require('dotenv').config();
 
-const uploads = require('../Backend/Middleware/Multer');
-const uploadOnCloudinary = require('../Backend/Services/cloudnary');
 const building = require('../Backend/Models/Building');
 
 // Initialize the Express application
@@ -30,6 +30,41 @@ if (!mongoURI) {
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.error('MongoDB connection error:', err));
+
+// Multer setup
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './temp/my-uploads');
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + '-' + file.originalname);
+  }
+});
+
+const uploads = multer({ storage: storage });
+
+// Cloudinary setup
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+const uploadOnCloudinary = async (localFilePath) => {
+  try {
+    console.log("hit cloudinary");
+    console.log(localFilePath);
+    const response = await cloudinary.uploader.upload(localFilePath, {
+      resource_type: "auto",
+    });
+    // Remove the local file
+    fs.unlinkSync(localFilePath);
+    return response;
+  } catch (error) {
+    fs.unlinkSync(localFilePath);
+    throw error;
+  }
+};
 
 // Define the building routes directly in server.js
 
