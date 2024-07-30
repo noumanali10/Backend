@@ -43,7 +43,7 @@ app.use('/', (req, res) => {
 });
 app.get('/api/hello', (req, res) => {
     res.send('Hello World!');
-})
+}) 
 // Define the port number
 const PORT = process.env.PORT || 3000;
 
