@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const dotenv = require('dotenv');
 require('dotenv').config();
-const buildingRoutes = require('./Routes/building');
+const buildingRoutes = require('../Backend/Routes/Building');
 const userRoutes = require('./Routes/Users');
 const {isAuthenticated} = require('./Middleware/auth');
 
