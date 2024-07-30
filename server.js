@@ -57,7 +57,7 @@ if (userRoutes) {
 }
 
 app.use('/', (req, res) => {
-    res.send('Welcome to the Building Management System API');
+    res.send('Ramu');
 });
 
 app.get('/api/hello', (req, res) => {
