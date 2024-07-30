@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Building = require('../Models/Building');
+const building = require('../Models/building');
 const multer = require('multer'); // Add this line
 const uploads =require('../Middleware/Multer');
 const uploadOnCloudinary = require('../Services/cloudnary');
@@ -37,7 +37,7 @@ router.post('/', uploads.single('File'), async (req, res) => {
       console.log(cloudinaryResponse.url);
       // Create a new building object
 
-      const newBuilding = new Building({
+      const newbuilding = new building({
         ID,
         name,
         File: cloudinaryResponse.url , // Save the Cloudinary URL
@@ -46,10 +46,10 @@ router.post('/', uploads.single('File'), async (req, res) => {
       });
   
       // Save the new building to the database
-      await newBuilding.save();
+      await newbuilding.save();
   
       // Send the saved building object as a response
-      res.status(201).json(newBuilding);
+      res.status(201).json(newbuilding);
     } catch (error) {
       res.status(400).json({ error: error.message });
     }
@@ -58,7 +58,7 @@ router.post('/', uploads.single('File'), async (req, res) => {
 // Read all buildings
 router.get('/', async (req, res) => {
     try {
-        const buildings = await Building.find();
+        const buildings = await building.find();
         res.status(200).json(buildings);
     } catch (error) {
         res.status(400).json({ error: error.message });
@@ -68,9 +68,9 @@ router.get('/', async (req, res) => {
 // Read a single building by ID
 router.get('/:id', async (req, res) => {
     try {
-        const building = await Building.findById(req.params.id);
+        const building = await building.findById(req.params.id);
         if (!building) {
-            return res.status(404).json({ error: 'Building not found' });
+            return res.status(404).json({ error: 'building not found' });
         }
         res.status(200).json(building);
     } catch (error) {
@@ -83,9 +83,9 @@ router.get('/search/:SearchQuery', async (req, res) => {
     try{
         console.log("Hit");
        console.log(req.params.SearchQuery);
-        const buildings = await Building.find({name: req.params.SearchQuery});
+        const buildings = await building.find({name: req.params.SearchQuery});
         if(!buildings){
-            return res.status(404).json({error: 'Building not found'});
+            return res.status(404).json({error: 'building not found'});
         }
         res.status(200).json(buildings);
     }
@@ -98,13 +98,13 @@ router.get('/search/:SearchQuery', async (req, res) => {
 router.put('/:id', async (req, res) => {
     try {
         const { name, File, coordinates, Description } = req.body;
-        const building = await Building.findByIdAndUpdate(
+        const building = await building.findByIdAndUpdate(
             req.params.id,
             { name, File, coordinates, Description },
             { new: true, runValidators: true }
         );
         if (!building) {
-            return res.status(404).json({ error: 'Building not found' });
+            return res.status(404).json({ error: 'building not found' });
         }
         res.status(200).json(building);
     } catch (error) {
@@ -123,9 +123,9 @@ router.get('/coordinates/:lat/:lng', async (req, res) => {
         }
 
         console.log("Hit");
-        const buildings = await Building.find({ "coordinates": coordinates  });
+        const buildings = await building.find({ "coordinates": coordinates  });
         if (!buildings) {
-            return res.status(404).json({ error: 'Building not found' });
+            return res.status(404).json({ error: 'building not found' });
         }
         res.status(200).json(buildings);
     } catch (error) {
@@ -138,11 +138,11 @@ router.get('/coordinates/:lat/:lng', async (req, res) => {
 // Delete a building by ID
 router.delete('/:id', async (req, res) => {
     try {
-        const building = await Building.findByIdAndDelete(req.params.id);
+        const building = await building.findByIdAndDelete(req.params.id);
         if (!building) {
-            return res.status(404).json({ error: 'Building not found' });
+            return res.status(404).json({ error: 'building not found' });
         }
-        res.status(200).json({ message: 'Building deleted' });
+        res.status(200).json({ message: 'building deleted' });
     } catch (error) {
         res.status(400).json({ error: error.message });
     }

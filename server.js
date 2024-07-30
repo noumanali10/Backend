@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const dotenv = require('dotenv');
 require('dotenv').config();
-const buildingRoutes = require('./Routes/Building');
+const buildingRoutes = require('./Routes/building');
 const userRoutes = require('./Routes/Users');
 const {isAuthenticated} = require('./Middleware/auth');
 
@@ -38,7 +38,7 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
 app.use('/buildings', buildingRoutes);
 app.use('/User', userRoutes);
 app.use('/', (req, res) => {
-    res.send('Welcome to the Building Management System API');
+    res.send('Welcome to the building Management System API');
 });
 app.get('/api/hello', (req, res) => {
     res.send('Hello World!');

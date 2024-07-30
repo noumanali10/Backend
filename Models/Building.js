@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-// Define the Building schema
+// Define the building schema
 const buildingSchema = new Schema({
     ID:{
         type: String,
@@ -34,8 +34,8 @@ const buildingSchema = new Schema({
     }
 });
 
-// Create the Building model
-const Building = mongoose.model('Building', buildingSchema);
+// Create the building model
+const building = mongoose.model('building', buildingSchema);
 
-// Export the Building model
-module.exports = Building;
+// Export the building model
+module.exports = building;
