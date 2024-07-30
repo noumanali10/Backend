@@ -1,16 +1,13 @@
 // Import required modules
 const express = require('express');
-const multer = require('multer');
-const path = require('path');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const dotenv = require('dotenv');
 require('dotenv').config();
-// const buildingRoutes = require('../Backend/Routes/Building');
+// Adjust the import statement to match the actual file name
 const buildingRoutes = require('./Routes/building');
 const userRoutes = require('./Routes/Users');
-const {isAuthenticated} = require('./Middleware/auth');
 
 // Initialize the Express application
 const app = express();
@@ -22,9 +19,7 @@ app.use(express.json());
 // Middleware to handle CORS
 app.use(cors());
 
-
 // MongoDB connection string
-
 const mongoURI = process.env.MONGO_URI;
 if (!mongoURI) {
     console.error('MongoURI is not defined');
@@ -39,11 +34,12 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
 app.use('/buildings', buildingRoutes);
 app.use('/User', userRoutes);
 app.use('/', (req, res) => {
-    res.send('Welcome to the building Management System API');
+    res.send('hello world');
 });
 app.get('/api/hello', (req, res) => {
-    res.send('Hello World!');
-}) 
+    res.send('Ramu');
+});
+
 // Define the port number
 const PORT = process.env.PORT || 3000;
 
@@ -51,20 +47,3 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
-
-// const express = require('express');
-// const app = express();
-// const PORT = process.env.PORT || 3000;
-
-// app.use(express.json());
-
-// app.get('/api/hello', (req, res) => {
-//     res.send('Hello World!');
-// });
-
-// app.listen(PORT, () => {
-//     console.log(`Server is running on port ${PORT}`);
-// });
-
-// module.exports = app;
-
