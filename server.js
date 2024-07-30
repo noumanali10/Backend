@@ -5,9 +5,22 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const dotenv = require('dotenv');
 require('dotenv').config();
+
 // Adjust the import statement to match the actual file name
-const buildingRoutes = require('./Routes/building');
-const userRoutes = require('./Routes/Users');
+let buildingRoutes, userRoutes;
+try {
+    buildingRoutes = require('./Routes/Building');
+    console.log('Successfully required ./Routes/Building');
+} catch (err) {
+    console.error('Error requiring ./Routes/Building:', err);
+}
+
+try {
+    userRoutes = require('./Routes/Users');
+    console.log('Successfully required ./Routes/Users');
+} catch (err) {
+    console.error('Error requiring ./Routes/Users:', err);
+}
 
 // Initialize the Express application
 const app = express();
@@ -31,13 +44,24 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
     .catch(err => console.error('MongoDB connection error:', err));
 
 // Define the API routes
-app.use('/buildings', buildingRoutes);
-app.use('/User', userRoutes);
+if (buildingRoutes) {
+    app.use('/buildings', buildingRoutes);
+} else {
+    console.error('Building routes not defined');
+}
+
+if (userRoutes) {
+    app.use('/User', userRoutes);
+} else {
+    console.error('User routes not defined');
+}
+
 app.use('/', (req, res) => {
-    res.send('hello world');
+    res.send('Welcome to the Building Management System API');
 });
+
 app.get('/api/hello', (req, res) => {
-    res.send('Ramu');
+    res.send('Hello World!');
 });
 
 // Define the port number
