@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const building = require('../Models/building');
+const building = require('../Backend/Models/Building');
 const multer = require('multer');
-const uploads = require('../Middleware/Multer');
-const uploadOnCloudinary = require('../Services/cloudnary');
+const uploads = require('../Backend/Middleware/Multer');
+const uploadOnCloudinary = require('../Backend/Services/cloudnary');
 
 // Create a new building
 router.post('/', uploads.single('File'), async (req, res) => {
