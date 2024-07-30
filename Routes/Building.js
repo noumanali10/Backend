@@ -1,59 +1,46 @@
 const express = require('express');
 const router = express.Router();
 const building = require('../Models/building');
-const multer = require('multer'); // Add this line
-const uploads =require('../Middleware/Multer');
+const multer = require('multer');
+const uploads = require('../Middleware/Multer');
 const uploadOnCloudinary = require('../Services/cloudnary');
- // Add this line
-
-
-
 
 // Create a new building
 router.post('/', uploads.single('File'), async (req, res) => {
     try {
         console.log("Hit");
         console.log(req.body);
-        // console.log(req.file);
-      const { ID, name, Description,lat,lng } = req.body;
-      console.log(ID, name, Description,lat,lng);
-// console.log('Manual',coordinates);
-// console.log("lat",coordinates.lat);
-// console.log("lng",coordinates.lng);
-     
-      
 
-      const File = req.file;
-      console.log(File.path);
-    // const File= "helll.jpg";
+        const { ID, name, Description, lat, lng } = req.body;
+        console.log(ID, name, Description, lat, lng);
 
-    const coordinates = {   
-        lat,
-        lng
-    }
-  
-    //   upload the file to Cloudinary
-      const cloudinaryResponse = await uploadOnCloudinary(File.path);
-      console.log(cloudinaryResponse.url);
-      // Create a new building object
+        const File = req.file;
+        console.log(File.path);
 
-      const newbuilding = new building({
-        ID,
-        name,
-        File: cloudinaryResponse.url , // Save the Cloudinary URL
-        coordinates,
-        Description
-      });
-  
-      // Save the new building to the database
-      await newbuilding.save();
-  
-      // Send the saved building object as a response
-      res.status(201).json(newbuilding);
+        const coordinates = { lat, lng };
+
+        // Upload the file to Cloudinary
+        const cloudinaryResponse = await uploadOnCloudinary(File.path);
+        console.log(cloudinaryResponse.url);
+
+        // Create a new building object
+        const newbuilding = new building({
+            ID,
+            name,
+            File: cloudinaryResponse.url,
+            coordinates,
+            Description
+        });
+
+        // Save the new building to the database
+        await newbuilding.save();
+
+        // Send the saved building object as a response
+        res.status(201).json(newbuilding);
     } catch (error) {
-      res.status(400).json({ error: error.message });
+        res.status(400).json({ error: error.message });
     }
-  });
+});
 
 // Read all buildings
 router.get('/', async (req, res) => {
@@ -78,18 +65,17 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-//Read a building by value
+// Read a building by value
 router.get('/search/:SearchQuery', async (req, res) => {
-    try{
+    try {
         console.log("Hit");
-       console.log(req.params.SearchQuery);
-        const buildings = await building.find({name: req.params.SearchQuery});
-        if(!buildings){
-            return res.status(404).json({error: 'building not found'});
+        console.log(req.params.SearchQuery);
+        const buildings = await building.find({ name: req.params.SearchQuery });
+        if (!buildings) {
+            return res.status(404).json({ error: 'building not found' });
         }
         res.status(200).json(buildings);
-    }
-    catch(error){
+    } catch (error) {
         console.log(error);
     }
 });
@@ -112,18 +98,11 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// find by coordinates
+// Find by coordinates
 router.get('/coordinates/:lat/:lng', async (req, res) => {
     try {
-        lat = req.params.lat;
-        lng = req.params.lng;
-        const coordinates = {
-            lat: typeof(string).lat,
-            lng: typeof(string).lng
-        }
-
-        console.log("Hit");
-        const buildings = await building.find({ "coordinates": coordinates  });
+        const { lat, lng } = req.params;
+        const buildings = await building.find({ "coordinates.lat": lat, "coordinates.lng": lng });
         if (!buildings) {
             return res.status(404).json({ error: 'building not found' });
         }
@@ -132,8 +111,6 @@ router.get('/coordinates/:lat/:lng', async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 });
-// give me endpoint to search by coordinates
-
 
 // Delete a building by ID
 router.delete('/:id', async (req, res) => {

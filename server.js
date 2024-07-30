@@ -1,4 +1,3 @@
-// Import required modules
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -12,7 +11,7 @@ try {
     buildingRoutes = require('./Routes/building');
     console.log('Successfully required ./Routes/building');
 } catch (err) {
-    console.error('Error requiring ./Routes/Building:', err);
+    console.error('Error requiring ./Routes/building:', err);
 }
 
 try {
