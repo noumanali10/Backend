@@ -8,7 +8,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 require('dotenv').config();
 // const buildingRoutes = require('../Backend/Routes/Building');
-const buildingRoutes = require('../Backend/Routes/building');
+// const buildingRoutes = require('./Routes/building');
 const userRoutes = require('./Routes/Users');
 const {isAuthenticated} = require('./Middleware/auth');
 
@@ -36,7 +36,7 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
     .catch(err => console.error('MongoDB connection error:', err));
 
 // Define the API routes
-app.use('/buildings', buildingRoutes);
+// app.use('/buildings', buildingRoutes);
 app.use('/User', userRoutes);
 app.use('/', (req, res) => {
     res.send('Welcome to the building Management System API');
