@@ -9,8 +9,8 @@ require('dotenv').config();
 // Adjust the import statement to match the actual file name
 let buildingRoutes, userRoutes;
 try {
-    buildingRoutes = require('./Routes/Building');
-    console.log('Successfully required ./Routes/Building');
+    buildingRoutes = require('./Routes/building');
+    console.log('Successfully required ./Routes/building');
 } catch (err) {
     console.error('Error requiring ./Routes/Building:', err);
 }
