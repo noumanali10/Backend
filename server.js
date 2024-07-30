@@ -37,7 +37,7 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
 // Define the API routes
 app.use('/buildings', buildingRoutes);
 app.use('/User', userRoutes);
-app.use('/',isAuthenticated, (req, res) => {
+app.use('/', (req, res) => {
     res.send('Welcome to the Building Management System API');
 });
 app.get('/api/hello', (req, res) => {
