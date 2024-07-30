@@ -8,6 +8,8 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 require('dotenv').config();
 const buildingRoutes = require('../Backend/Routes/Building');
+const userRoutes = require('./Routes/Users');
+const {isAuthenticated} = require('./Middleware/auth');
 
 // Initialize the Express application
 const app = express();
@@ -34,6 +36,10 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
 
 // Define the API routes
 app.use('/buildings', buildingRoutes);
+app.use('/User', userRoutes);
+app.use('/',isAuthenticated, (req, res) => {
+    res.send('Welcome to the Building Management System API');
+});
 // Define the port number
 const PORT = process.env.PORT || 3000;
 
