@@ -3,9 +3,6 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const multer = require('multer');
-const cloudinary = require('cloudinary').v2;
-const fs = require('fs');
 require('dotenv').config();
 
 // Initialize the Express application
@@ -45,94 +42,42 @@ const buildingSchema = new Schema({
         required: true
     },
     coordinates: {
-        type: {
-            lat: {
-                type: Number,
-                required: true
-            },
-            lng: {
-                type: Number,
-                required: true
-            }
+        lat: {
+            type: Number,
+            required: true
         },
-        required: true
+        lng: {
+            type: Number,
+            required: true
+        }
     },
     Description: {
         type: String,
         required: true
     }
 });
-const building = mongoose.model('building', buildingSchema);
-
-// Multer setup
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, './temp/my-uploads');
-    },
-    filename: function (req, file, cb) {
-        cb(null, Date.now() + '-' + file.originalname);
-    }
-});
-
-const uploads = multer({ storage: storage });
-
-// Cloudinary setup
-cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-
-const uploadOnCloudinary = async (localFilePath) => {
-    try {
-        console.log("hit cloudinary");
-        console.log(localFilePath);
-        const response = await cloudinary.uploader.upload(localFilePath, {
-            resource_type: "auto",
-        });
-        // Remove the local file
-        fs.unlinkSync(localFilePath);
-        return response;
-    } catch (error) {
-        fs.unlinkSync(localFilePath);
-        throw error;
-    }
-};
-
-// Define the building routes directly in server.js
+const Building = mongoose.model('Building', buildingSchema);
 
 // Create a new building
-app.post('/buildings', uploads.single('File'), async (req, res) => {
+app.post('/buildings', async (req, res) => {
     try {
-        console.log("Hit");
-        console.log(req.body);
-
-        const { ID, name, Description, lat, lng } = req.body;
-        console.log(ID, name, Description, lat, lng);
-
-        const File = req.file;
-        console.log(File.path);
-
+        const { ID, name, Description, lat, lng, File } = req.body;
         const coordinates = { lat, lng };
 
-        // Upload the file to Cloudinary
-        const cloudinaryResponse = await uploadOnCloudinary(File.path);
-        console.log(cloudinaryResponse.url);
-
         // Create a new building object
-        const newbuilding = new building({
+        const newBuilding = new Building({
             ID,
             name,
-            File: cloudinaryResponse.url,
+            File,
             coordinates,
             Description
         });
 
         // Save the new building to the database
-        await newbuilding.save();
+        await newBuilding.save();
 
         // Send the saved building object as a response
-        res.status(201).json(newbuilding);
+        res.status(201).json(newBuilding);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
@@ -141,7 +86,7 @@ app.post('/buildings', uploads.single('File'), async (req, res) => {
 // Read all buildings
 app.get('/buildings', async (req, res) => {
     try {
-        const buildings = await building.find();
+        const buildings = await Building.find();
         res.status(200).json(buildings);
     } catch (error) {
         res.status(400).json({ error: error.message });
@@ -151,9 +96,9 @@ app.get('/buildings', async (req, res) => {
 // Read a single building by ID
 app.get('/buildings/:id', async (req, res) => {
     try {
-        const building = await building.findById(req.params.id);
+        const building = await Building.findById(req.params.id);
         if (!building) {
-            return res.status(404).json({ error: 'building not found' });
+            return res.status(404).json({ error: 'Building not found' });
         }
         res.status(200).json(building);
     } catch (error) {
@@ -164,15 +109,13 @@ app.get('/buildings/:id', async (req, res) => {
 // Read a building by value
 app.get('/buildings/search/:SearchQuery', async (req, res) => {
     try {
-        console.log("Hit");
-        console.log(req.params.SearchQuery);
-        const buildings = await building.find({ name: req.params.SearchQuery });
+        const buildings = await Building.find({ name: req.params.SearchQuery });
         if (!buildings) {
-            return res.status(404).json({ error: 'building not found' });
+            return res.status(404).json({ error: 'Building not found' });
         }
         res.status(200).json(buildings);
     } catch (error) {
-        console.log(error);
+        res.status(400).json({ error: error.message });
     }
 });
 
@@ -180,13 +123,13 @@ app.get('/buildings/search/:SearchQuery', async (req, res) => {
 app.put('/buildings/:id', async (req, res) => {
     try {
         const { name, File, coordinates, Description } = req.body;
-        const building = await building.findByIdAndUpdate(
+        const building = await Building.findByIdAndUpdate(
             req.params.id,
             { name, File, coordinates, Description },
             { new: true, runValidators: true }
         );
         if (!building) {
-            return res.status(404).json({ error: 'building not found' });
+            return res.status(404).json({ error: 'Building not found' });
         }
         res.status(200).json(building);
     } catch (error) {
@@ -198,9 +141,9 @@ app.put('/buildings/:id', async (req, res) => {
 app.get('/buildings/coordinates/:lat/:lng', async (req, res) => {
     try {
         const { lat, lng } = req.params;
-        const buildings = await building.find({ "coordinates.lat": lat, "coordinates.lng": lng });
+        const buildings = await Building.find({ "coordinates.lat": lat, "coordinates.lng": lng });
         if (!buildings) {
-            return res.status(404).json({ error: 'building not found' });
+            return res.status(404).json({ error: 'Building not found' });
         }
         res.status(200).json(buildings);
     } catch (error) {
@@ -211,38 +154,14 @@ app.get('/buildings/coordinates/:lat/:lng', async (req, res) => {
 // Delete a building by ID
 app.delete('/buildings/:id', async (req, res) => {
     try {
-        const building = await building.findByIdAndDelete(req.params.id);
+        const building = await Building.findByIdAndDelete(req.params.id);
         if (!building) {
-            return res.status(404).json({ error: 'building not found' });
+            return res.status(404).json({ error: 'Building not found' });
         }
-        res.status(200).json({ message: 'building deleted' });
+        res.status(200).json({ message: 'Building deleted' });
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
-});
-
-// Adjust the import statement to match the actual file name
-let userRoutes;
-try {
-    userRoutes = require('./Routes/Users');
-    console.log('Successfully required ./Routes/Users');
-} catch (err) {
-    console.error('Error requiring ./Routes/Users:', err);
-}
-
-// Define the user routes
-if (userRoutes) {
-    app.use('/User', userRoutes);
-} else {
-    console.error('User routes not defined');
-}
-
-app.use('/', (req, res) => {
-    res.send('Ramu');
-});
-
-app.get('/api/hello', (req, res) => {
-    res.send('Hello World!');
 });
 
 // Define the port number
