@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const dotenv = require('dotenv');
 require('dotenv').config();
-const Users = require('./routes/Users');
+const Users = require('./Routes/Users');
 
 // Initialize the Express application
 const app = express();
