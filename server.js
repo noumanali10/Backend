@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const dotenv = require('dotenv');
 require('dotenv').config();
-const users = require('./routes/users ');
+const Users = require('./routes/Users');
 
 // Initialize the Express application
 const app = express();
@@ -166,7 +166,7 @@ app.delete('/buildings/:id', async (req, res) => {
 });
 
 // Use the users router for requests to the /users path
-app.use('/users', users);
+app.use('/users', Users);
 
 // Define the port number
 const PORT = process.env.PORT || 3000;
